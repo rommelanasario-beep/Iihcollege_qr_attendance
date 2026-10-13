@@ -1,0 +1,1 @@
+Run `schema.sql` against your PostgreSQL database before starting the backend. For hosted use, create a managed PostgreSQL database and set its connection string as `DATABASE_URL` in your backend host's environment settings. Never commit real credentials.

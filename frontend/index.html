@@ -1,189 +1,21 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="IIH College - Quality and Affordable Education" />
-  <title>IIH College | Enrollment 2026–2027</title>
-  <link rel="stylesheet" href="styles.css" />
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IIH College | Student Attendance & Security</title>
+<link rel="stylesheet" href="styles.css">
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 </head>
 <body>
-  <header class="site-header">
-    <nav class="nav container">
-      <a class="brand" href="#home">
-        <span class="brand-mark">IIH</span>
-        <span>IIH College</span>
-      </a>
-      <button class="nav-toggle" id="navToggle">☰</button>
-      <div class="nav-links" id="navLinks">
-        <a href="#home">Home</a>
-        <a href="#about">About</a>
-        <a href="#courses">Courses</a>
-        <a href="#admissions">Admissions</a>
-        <a href="#dashboard">Dashboard</a>
-        <a href="#contact">Contact</a>
-      </div>
-      <button class="btn btn-primary" id="loginBtn">Student Login</button>
-    </nav>
-  </header>
-
-  <main>
-    <section id="home" class="hero">
-      <div class="container hero-grid">
-        <div>
-          <span class="eyebrow">SY 2026–2027 • ENROLLMENT ONGOING</span>
-          <h1>Quality and affordable education for your future.</h1>
-          <p class="hero-copy">
-            Explore IIH College programs, admissions information and student services
-            in one modern campus portal.
-          </p>
-          <div class="hero-actions">
-            <a class="btn btn-primary" href="#courses">Explore Courses</a>
-            <a class="btn btn-light" href="#admissions">Enroll Now</a>
-          </div>
-          <div class="stats">
-            <div><strong>6</strong><span>College Programs</span></div>
-            <div><strong>₱500</strong><span>Enrollment fee shown</span></div>
-            <div><strong>2026–27</strong><span>School year</span></div>
-          </div>
-        </div>
-        <div class="hero-card">
-          <div class="seal">IIH<br><small>COLLEGE</small></div>
-          <h3>Enrollment is ongoing!</h3>
-          <p>Build your career with programs in criminology, tourism, IT, accounting and teacher education.</p>
-          <div class="notice">3 days class schedule • ₱500 enrollment fee</div>
-        </div>
-      </div>
-    </section>
-
-    <section id="about" class="section">
-      <div class="container two-col">
-        <div>
-          <span class="eyebrow">ABOUT IIH COLLEGE</span>
-          <h2>Transforming lives through quality and affordable education.</h2>
-          <p>
-            IIH College is presented in the supplied reference as a school serving
-            the Novaliches, Quezon City community. This website provides a clean
-            public portal for programs, enrollment and student services.
-          </p>
-          <div class="info-list">
-            <div><strong>Location</strong><span>Dela Rama Bldg., Buenamar St., Brgy. Nova Proper, Novaliches, Quezon City, Philippines</span></div>
-            <div><strong>Phone</strong><span>0975 810 5308</span></div>
-            <div><strong>Email</strong><span>iihcolleges@gmail.com</span></div>
-          </div>
-        </div>
-        <div class="about-panel">
-          <h3>Why choose IIH?</h3>
-          <ul>
-            <li>Career-focused degree programs</li>
-            <li>Student-centered services</li>
-            <li>Simple online enrollment workflow</li>
-            <li>Dedicated student dashboard</li>
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    <section id="courses" class="section section-alt">
-      <div class="container">
-        <div class="section-heading">
-          <div>
-            <span class="eyebrow">ACADEMIC PROGRAMS</span>
-            <h2>Choose your course</h2>
-          </div>
-          <input id="courseSearch" class="search" placeholder="Search courses..." />
-        </div>
-        <div id="courseGrid" class="course-grid">
-          <p>Loading courses...</p>
-        </div>
-      </div>
-    </section>
-
-    <section id="admissions" class="section">
-      <div class="container admission-grid">
-        <div>
-          <span class="eyebrow">ADMISSIONS</span>
-          <h2>Start your enrollment</h2>
-          <p>Register a student account, choose a course, and track your submitted enrollment from the dashboard.</p>
-          <div class="steps">
-            <div><b>01</b><span>Create your student account.</span></div>
-            <div><b>02</b><span>Select one of the available programs.</span></div>
-            <div><b>03</b><span>Submit and monitor your enrollment.</span></div>
-          </div>
-        </div>
-        <form id="enrollForm" class="card">
-          <h3>Quick enrollment</h3>
-          <label>Course
-            <select id="enrollCourse" required></select>
-          </label>
-          <button class="btn btn-primary" type="submit">Submit Enrollment</button>
-          <p class="muted" id="enrollMessage">Student login is required.</p>
-        </form>
-      </div>
-    </section>
-
-    <section id="dashboard" class="section section-alt">
-      <div class="container">
-        <span class="eyebrow">STUDENT PORTAL</span>
-        <h2>Dashboard</h2>
-        <div id="dashboardContent" class="dashboard-empty">
-          Log in to view your student dashboard.
-        </div>
-      </div>
-    </section>
-
-    <section id="contact" class="section">
-      <div class="container contact-grid">
-        <div>
-          <span class="eyebrow">CONTACT</span>
-          <h2>Talk to admissions</h2>
-          <p>Send a message for course, enrollment or campus inquiries.</p>
-          <div class="contact-box">
-            <p><strong>📍</strong> Dela Rama Bldg., Buenamar St., Brgy. Nova Proper, Novaliches, Quezon City</p>
-            <p><strong>☎</strong> 0975 810 5308</p>
-            <p><strong>✉</strong> iihcolleges@gmail.com</p>
-          </div>
-        </div>
-        <form id="contactForm" class="card">
-          <label>Name<input name="name" required /></label>
-          <label>Email<input name="email" type="email" required /></label>
-          <label>Phone<input name="phone" /></label>
-          <label>Message<textarea name="message" rows="5" required></textarea></label>
-          <button class="btn btn-primary" type="submit">Send Message</button>
-          <p class="muted" id="contactMessage"></p>
-        </form>
-      </div>
-    </section>
-  </main>
-
-  <footer>
-    <div class="container footer-grid">
-      <div><strong>IIH College</strong><p>Quality and Affordable Education</p></div>
-      <div><a href="#about">About</a><a href="#courses">Courses</a><a href="#contact">Contact</a></div>
-      <div><span>SY 2026–2027</span><span>© 2026 IIH College</span></div>
-    </div>
-  </footer>
-
-  <dialog id="authDialog">
-    <div class="dialog-head">
-      <h3 id="authTitle">Student Login</h3>
-      <button id="closeAuth" class="icon-btn">×</button>
-    </div>
-    <div class="auth-tabs">
-      <button class="active" data-mode="login">Login</button>
-      <button data-mode="register">Register</button>
-    </div>
-    <form id="authForm">
-      <div id="nameField" class="hidden">
-        <label>Full name<input id="fullName" /></label>
-      </div>
-      <label>Email<input id="email" type="email" required /></label>
-      <label>Password<input id="password" type="password" minlength="8" required /></label>
-      <button class="btn btn-primary" type="submit" id="authSubmit">Login</button>
-      <p class="muted" id="authMessage"></p>
-    </form>
-  </dialog>
-
-  <script src="app.js"></script>
-</body>
-</html>
+<header class="topbar"><div class="brand"><div class="logo">IIH</div><div><strong>IIH COLLEGE INC.</strong><small>Student Attendance & Security</small></div></div>
+<nav><button class="navbtn" data-view="home">Home</button><button class="navbtn" data-view="login">Login</button><button class="navbtn" data-view="register">Register</button><button class="navbtn hidden" data-view="dashboard" id="dashboardNav">Dashboard</button><button class="navbtn hidden" id="logoutBtn">Logout</button></nav></header>
+<main>
+<section id="home" class="view hero"><div class="hero-copy"><p class="eyebrow">SAFE CAMPUS • CONNECTED FAMILIES</p><h1>Every student accounted for.</h1><p>Secure QR-based attendance for IIH College. Authorized staff record attendance, and parents can receive SMS updates when students are marked present.</p><div class="actions"><button class="primary" data-view="login">Sign in</button><button class="secondary" data-view="register">Create student account</button></div><p class="fine">Student accounts require administrator approval. SMS updates require guardian consent and a configured SMS provider.</p></div><div class="hero-card"><div class="shield">✓</div><h3>Campus Check-in</h3><div class="fake-qr"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div><p>Scan • Verify • Notify</p></div></section>
+<section id="login" class="view hidden narrow"><div class="panel"><p class="eyebrow">WELCOME BACK</p><h2>Login to your account</h2><form id="loginForm"><label>Email address<input name="email" type="email" required autocomplete="username"></label><label>Password<input name="password" type="password" required autocomplete="current-password"></label><button class="primary full">Login</button></form><p class="muted">New student? <a href="#" data-view="register">Register here</a></p><div id="loginMessage" class="message"></div></div></section>
+<section id="register" class="view hidden narrow"><div class="panel"><p class="eyebrow">JOIN IIH COLLEGE</p><h2>Student registration</h2><form id="registerForm"><label>Full name<input name="fullName" required maxlength="160"></label><label>Email address<input name="email" type="email" required></label><label>Student number (optional)<input name="studentNumber" maxlength="60"></label><label>Password (minimum 8 characters)<input name="password" type="password" minlength="8" required></label><label>Parent/guardian mobile number<input name="guardianPhone" type="tel" placeholder="e.g. 09xxxxxxxxx"></label><label class="check"><input name="smsConsent" type="checkbox"> I have permission to provide this number and consent to attendance SMS updates.</label><button class="primary full">Submit registration</button></form><div id="registerMessage" class="message"></div></div></section>
+<section id="dashboard" class="view hidden"><div class="dash-head"><div><p class="eyebrow">IIH COLLEGE PORTAL</p><h2 id="welcome">Dashboard</h2></div><span class="role-chip" id="roleChip">Account</span></div>
+<div id="studentPanel" class="hidden grid-two"><div class="panel"><h3>Your attendance QR</h3><p class="muted">Show this code to authorized school staff at check-in.</p><img id="studentQr" class="qr-image hidden" alt="Your student QR code"><button id="loadQr" class="primary">Load my QR code</button><div id="qrMessage" class="message"></div></div><div class="panel"><h3>Attendance security</h3><p>Your account must be approved by the school administrator. Keep your QR private and report suspected misuse.</p><div class="notice">Parent SMS is sent only when guardian consent is recorded and SMS service is configured.</div></div></div>
+<div id="adminPanel" class="hidden"><div class="stats"><div class="stat"><span>Total students</span><strong id="totalStudents">—</strong></div><div class="stat"><span>Present today</span><strong id="presentToday">—</strong></div><div class="stat"><span>Pending approval</span><strong id="pendingCount">—</strong></div></div>
+<div class="grid-two"><div class="panel"><h3>Scan student QR</h3><label>Class / subject<input id="className" value="Class"></label><div id="reader"></div><label>Or enter QR token<input id="manualToken" placeholder="Scan token"></label><button id="manualScan" class="primary full">Record attendance</button><div id="scanMessage" class="message"></div></div><div class="panel"><h3>Student approvals</h3><div id="pendingStudents" class="stack"></div></div></div>
+<div class="panel table-panel"><h3>Recent attendance</h3><div class="table-wrap"><table><thead><tr><th>Student</th><th>Student no.</th><th>Class</th><th>Status</th><th>Time</th></tr></thead><tbody id="attendanceRows"></tbody></table></div></div></div>
+</section></main><footer>© IIH College Inc. • Student Attendance & Security</footer><script src="app.js"></script></body></html>

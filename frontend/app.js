@@ -1,184 +1,58 @@
-const API = 'http://localhost:5000/api';
-let courses = [];
-let authMode = 'login';
-
-const $ = (selector) => document.querySelector(selector);
-
-async function api(path, options = {}) {
-  const token = localStorage.getItem('iih_token');
-  const headers = { 'Content-Type': 'application/json', ...(options.headers || {}) };
-  if (token) headers.Authorization = `Bearer ${token}`;
-
-  const res = await fetch(API + path, { ...options, headers });
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.error || 'Request failed');
+const API_BASE = window.API_BASE || 'http://localhost:5000/api';
+const $ = id => document.getElementById(id);
+let token = sessionStorage.getItem('iih_token') || '';
+let currentUser = null;
+function show(view) {
+  document.querySelectorAll('.view').forEach(el => el.classList.add('hidden'));
+  $(view)?.classList.remove('hidden');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+document.querySelectorAll('[data-view]').forEach(el => el.addEventListener('click', e => { e.preventDefault(); show(el.dataset.view); }));
+function setAuth(user,newToken) {
+  currentUser=user;
+  if(newToken){token=newToken;sessionStorage.setItem('iih_token',token);}
+  $('dashboardNav').classList.toggle('hidden',!user);
+  $('logoutBtn').classList.toggle('hidden',!user);
+}
+$('logoutBtn').onclick=()=>{token='';currentUser=null;sessionStorage.removeItem('iih_token');setAuth(null);show('home');};
+async function api(path,options={}) {
+  const headers={'Content-Type':'application/json',...(token?{Authorization:`Bearer ${token}`} : {}),...(options.headers||{})};
+  const response=await fetch(`${API_BASE}${path}`,{...options,headers});
+  const data=await response.json().catch(()=>({error:'Unexpected response from API.'}));
+  if(!response.ok)throw new Error(data.error||'Request failed.');
   return data;
 }
-
-async function loadCourses() {
-  try {
-    courses = await api('/courses');
-    renderCourses();
-    $('#enrollCourse').innerHTML = courses.map(c =>
-      `<option value="${c.code}">${c.code} — ${c.name}</option>`
-    ).join('');
-  } catch (error) {
-    $('#courseGrid').innerHTML = `<p class="muted">Unable to load courses. Start the backend server first.</p>`;
-  }
-}
-
-function renderCourses() {
-  const query = ($('#courseSearch').value || '').toLowerCase();
-  const filtered = courses.filter(c =>
-    `${c.code} ${c.name} ${c.description}`.toLowerCase().includes(query)
-  );
-
-  $('#courseGrid').innerHTML = filtered.map(c => `
-    <article class="course-card">
-      <span class="course-code">${c.code}</span>
-      <h3>${c.name}</h3>
-      <p>${c.description}</p>
-      <p class="muted">${c.duration_years}-year program</p>
-      <button class="btn btn-primary enroll-course" data-code="${c.code}">Choose this course</button>
-    </article>
-  `).join('') || '<p>No matching course found.</p>';
-
-  document.querySelectorAll('.enroll-course').forEach(btn => {
-    btn.addEventListener('click', () => {
-      $('#enrollCourse').value = btn.dataset.code;
-      location.hash = 'admissions';
-    });
-  });
-}
-
-async function loadDashboard() {
-  const token = localStorage.getItem('iih_token');
-  if (!token) {
-    $('#dashboardContent').innerHTML = 'Log in to view your student dashboard.';
-    return;
-  }
-
-  try {
-    const data = await api('/dashboard');
-    $('#dashboardContent').innerHTML = `
-      <div class="dashboard">
-        <div class="metric"><span>Student</span><strong>${escapeHtml(data.user.full_name)}</strong><small>${escapeHtml(data.user.email)}</small></div>
-        <div class="metric"><span>Enrollments</span><strong>${data.enrollmentCount}</strong><small>Submitted records</small></div>
-        <div class="metric"><span>School Year</span><strong>2026–27</strong><small>Current intake</small></div>
-      </div>
-      <div class="enroll-list">
-        <div class="enroll-row"><strong>Recent enrollment</strong><strong>Status</strong></div>
-        ${data.recentEnrollments.length ? data.recentEnrollments.map(e => `
-          <div class="enroll-row"><span>${e.code} — ${escapeHtml(e.name)}</span><span class="badge">${e.status}</span></div>
-        `).join('') : '<div class="enroll-row"><span>No enrollment yet.</span></div>'}
-      </div>
-      <button class="btn btn-primary" id="logoutBtn" style="margin-top:18px">Log out</button>
-    `;
-    $('#logoutBtn').onclick = () => {
-      localStorage.removeItem('iih_token');
-      loadDashboard();
-      updateLoginButton();
-    };
-  } catch {
-    localStorage.removeItem('iih_token');
-    $('#dashboardContent').innerHTML = 'Your session expired. Please log in again.';
-    updateLoginButton();
-  }
-}
-
-function escapeHtml(value) {
-  return String(value).replace(/[&<>"']/g, ch => ({
-    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'
-  }[ch]));
-}
-
-function updateLoginButton() {
-  $('#loginBtn').textContent = localStorage.getItem('iih_token') ? 'Dashboard' : 'Student Login';
-  $('#loginBtn').onclick = () => {
-    if (localStorage.getItem('iih_token')) {
-      location.hash = 'dashboard';
-    } else {
-      $('#authDialog').showModal();
-    }
-  };
-}
-
-$('#courseSearch').addEventListener('input', renderCourses);
-$('#navToggle').onclick = () => $('#navLinks').classList.toggle('open');
-$('#closeAuth').onclick = () => $('#authDialog').close();
-
-document.querySelectorAll('.auth-tabs button').forEach(button => {
-  button.onclick = () => {
-    authMode = button.dataset.mode;
-    document.querySelectorAll('.auth-tabs button').forEach(b => b.classList.remove('active'));
-    button.classList.add('active');
-    $('#authTitle').textContent = authMode === 'login' ? 'Student Login' : 'Create Student Account';
-    $('#authSubmit').textContent = authMode === 'login' ? 'Login' : 'Register';
-    $('#nameField').classList.toggle('hidden', authMode === 'login');
-    $('#fullName').required = authMode === 'register';
-    $('#authMessage').textContent = '';
-  };
+function message(id,text,good=false){$(id).textContent=text;$(id).style.color=good?'#237347':'#b91f35';}
+$('loginForm').addEventListener('submit',async e=>{
+  e.preventDefault();message('loginMessage','Signing in…');const f=new FormData(e.target);
+  try{const r=await api('/auth/login',{method:'POST',body:JSON.stringify({email:f.get('email'),password:f.get('password')})});setAuth(r.user,r.token);await loadDashboard();show('dashboard');if(r.user.role==='admin')startScanner();}
+  catch(err){message('loginMessage',err.message);}
 });
-
-$('#authForm').addEventListener('submit', async (event) => {
-  event.preventDefault();
-  const payload = {
-    fullName: $('#fullName').value,
-    email: $('#email').value,
-    password: $('#password').value
-  };
-
-  try {
-    const data = await api(authMode === 'login' ? '/auth/login' : '/auth/register', {
-      method: 'POST',
-      body: JSON.stringify(payload)
-    });
-    localStorage.setItem('iih_token', data.token);
-    $('#authDialog').close();
-    $('#authForm').reset();
-    updateLoginButton();
-    await loadDashboard();
-    location.hash = 'dashboard';
-  } catch (error) {
-    $('#authMessage').textContent = error.message;
-  }
+$('registerForm').addEventListener('submit',async e=>{
+  e.preventDefault();message('registerMessage','Submitting…');const f=new FormData(e.target);
+  try{const r=await api('/auth/register',{method:'POST',body:JSON.stringify({fullName:f.get('fullName'),email:f.get('email'),password:f.get('password'),studentNumber:f.get('studentNumber'),guardianPhone:f.get('guardianPhone'),smsConsent:f.get('smsConsent')==='on'})});message('registerMessage',r.message,true);e.target.reset();}
+  catch(err){message('registerMessage',err.message);}
 });
-
-$('#enrollForm').addEventListener('submit', async (event) => {
-  event.preventDefault();
-  if (!localStorage.getItem('iih_token')) {
-    $('#authDialog').showModal();
-    $('#enrollMessage').textContent = 'Please log in first.';
-    return;
-  }
-
-  try {
-    await api('/enrollments', {
-      method: 'POST',
-      body: JSON.stringify({ courseCode: $('#enrollCourse').value })
-    });
-    $('#enrollMessage').textContent = 'Enrollment submitted successfully.';
-    await loadDashboard();
-  } catch (error) {
-    $('#enrollMessage').textContent = error.message;
-  }
-});
-
-$('#contactForm').addEventListener('submit', async (event) => {
-  event.preventDefault();
-  const form = new FormData(event.target);
-  try {
-    await api('/contact', {
-      method: 'POST',
-      body: JSON.stringify(Object.fromEntries(form.entries()))
-    });
-    event.target.reset();
-    $('#contactMessage').textContent = 'Thank you. Your message has been received.';
-  } catch (error) {
-    $('#contactMessage').textContent = error.message;
-  }
-});
-
-loadCourses();
-loadDashboard();
-updateLoginButton();
+async function loadDashboard(){
+  const me=await api('/me');setAuth(me.user);$('welcome').textContent=`Hello, ${me.user.fullName}`;$('roleChip').textContent=me.user.role==='admin'?'Administrator':'Student';
+  $('studentPanel').classList.toggle('hidden',me.user.role!=='student');$('adminPanel').classList.toggle('hidden',me.user.role!=='admin');
+  if(me.user.role==='admin')await loadAdmin();
+}
+$('loadQr').onclick=async()=>{try{const r=await api('/student/qr');$('studentQr').src=r.qr;$('studentQr').classList.remove('hidden');message('qrMessage',r.note,true);}catch(e){message('qrMessage',e.message);}};
+async function loadAdmin(){
+  const d=await api('/admin/dashboard');$('totalStudents').textContent=d.totalStudents;$('presentToday').textContent=d.presentToday;$('pendingCount').textContent=d.pendingStudents.length;$('pendingStudents').innerHTML='';
+  d.pendingStudents.forEach(s=>{const row=document.createElement('div');row.className='pending';const info=document.createElement('span');info.textContent=`${s.full_name} • ${s.email}`;const btn=document.createElement('button');btn.className='primary';btn.textContent='Approve';btn.onclick=async()=>{try{await api(`/admin/students/${s.id}/approve`,{method:'PATCH'});await loadAdmin();}catch(e){alert(e.message)}};row.append(info,btn);$('pendingStudents').append(row);});
+  $('attendanceRows').innerHTML='';d.recentAttendance.forEach(a=>{const tr=document.createElement('tr');[a.full_name,a.student_number||'—',a.class_name,a.status,new Date(a.checked_in_at).toLocaleString('en-PH',{timeZone:'Asia/Manila'})].forEach(v=>{const td=document.createElement('td');td.textContent=v;tr.append(td)});$('attendanceRows').append(tr);});
+}
+async function recordScan(qrToken){
+  try{const r=await api('/attendance/scan',{method:'POST',body:JSON.stringify({qrToken,className:$('className').value})});message('scanMessage',`${r.student.name} marked present. SMS: ${r.sms.sent?'sent':r.sms.reason}`,true);$('manualToken').value='';await loadAdmin();}
+  catch(e){message('scanMessage',e.message);}
+}
+$('manualScan').onclick=()=>recordScan($('manualToken').value.trim());
+let scanner=null;
+async function startScanner(){
+  if(!window.Html5Qrcode||scanner)return;
+  try{scanner=new Html5Qrcode('reader');await scanner.start({facingMode:'environment'},{fps:10,qrbox:{width:220,height:220}},async decoded=>{await scanner.stop();scanner=null;await recordScan(decoded);setTimeout(()=>startScanner(),1200);},()=>{});}
+  catch(e){scanner=null;message('scanMessage','Camera scan unavailable. Use HTTPS hosting, allow camera permission, or enter the token manually.');}
+}
+if(token){loadDashboard().then(()=>{show('dashboard');if(currentUser?.role==='admin')startScanner();}).catch(()=>{token='';sessionStorage.removeItem('iih_token');});}
